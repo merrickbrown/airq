@@ -1,0 +1,51 @@
+DEVICE
+
+https://www.adafruit.com/product/4632
+https://github.com/ladyada/Adafruit_CircuitPython_PM25
+
+
+INPUT VALUES
+
+pmx.0 concentration is micrograms per m^3 of particles with diameter x.0 micrometers or less 
+this device reads pm1.0, 2.5, 10.0
+and also concentrations per 0.1L 
+for diameter bins  >= 0.3, >= 0.5, 1.0, 2.5, 5.0 and 10 micrometers
+the latter looks to have higher-resolution output in adafruit's code
+
+previously I incorrectly thought these units were volume/m^3 but confirmed they are micrograms in the tech details on the product page given above
+see that same site for device resolutions and error margins
+
+gives both standard and environmental concentration units. unclear on the difference. see this post
+https://forums.adafruit.com/viewtopic.php?f=48&t=136528&p=841771&hilit=pm2.5#p776128
+
+which suggests std is the one to use but the difference might not matter at household-level concentrations
+
+
+STANDARDS
+
+many outdoor standards
+unclear whether these apply to indoor, but so far the answer seems to be yes.
+https://en.wikipedia.org/wiki/Particulates#Regulation
+
+
+WHO says standard can be applied to indoor air quality
+see par 1 on p10 for discussion and p9 for standards
+https://apps.who.int/iris/bitstream/handle/10665/69477/WHO_SDE_PHE_OEH_06.02_eng.pdf;jsessionid=7C92ED62CF97B1B64EFE10DCE2956514?sequence=1
+
+and some guidance on the adafruit forum ('airhead' post)
+https://forums.adafruit.com/viewtopic.php?f=48&t=136528&p=841771&hilit=pm2.5#p776174
+
+and an epa map of air quality monitors, 
+which will give air quality data for your location
+https://www.epa.gov/outdoor-air-quality-data/interactive-map-air-quality-monitors
+
+
+NOTES AND QUESTIONS
+
+difference between 'environmental' and 'standard' concentrations for pm?
+
+federal aq index calculator (outdoor?): https://www.airnow.gov/aqi/aqi-calculator/
+
+do i need to calibrate this thing?
+https://www.epa.gov/sites/production/files/2018-01/documents/collocation_instruction_guide.pdf
+https://forums.adafruit.com/viewtopic.php?f=48&t=136528&p=841771&hilit=pm2.5#p776174
