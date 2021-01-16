@@ -33,17 +33,59 @@ i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
 pm25 = PM25_I2C(i2c, reset_pin)
 
 # FUN
-def save_aq(pm25, file, first = False):
-    aqdata = pm25.read()
-    aqdata['time'] = datetime.datetime.now()
-    if first:
-        d = pd.DataFrame(aqdata, index=[0])
-        d.columns = d.columns.str.replace(r'\s+', '_')
-        d.to_csv(file, index = False)
-    else:
-        pd.DataFrame(aqdata, index = [0]).to_csv(file, mode='a',
-        header=False, index=False)
+def avg_dicts(dicts):
+    collected = {}
+    for d in dicts:
+        for k,v in d.items():
+            if k in collected:
+                collected[k].append(v)
+            else:
+                collected[k] = [v]
+    df = pd.DataFrame(collected)
+    return df.mean()  
 
+def read_row(pm25):
+    # We've got to copy this over since it seems that the read() returns a reference to the dict.
+    aqdata = pm25.read().copy()
+    aqdata['time'] = [datetime.datetime.now()]
+    return aqdata.copy()
+
+'''
+This is currently blocking - which I think is OK small values of period, but
+that can be fixed by using some threading here
+'''
+def avg_readings(pm25, period_s = 2, num_samples = 50):
+    data = []
+    delta = period_s/num_samples
+    for i in range(num_samples):
+        try:
+            row = read_row(pm25)
+            data.append(row)
+        except RuntimeError:
+            print("Could not read from PM2.5")
+        time.sleep(delta)
+    avg = avg_dicts(data)
+    # set the time to be the last time we sampled
+    avg['time'] = pd.Timestamp(datetime.datetime.now())
+    return avg
+
+def save_aq(pm25, file, first = False):
+    d = pd.DataFrame(read_row(pm25), index=[0])
+    if first:
+        d.columns = d.columns.str.replace(r'\s+', '_')
+        write = lambda f : d.to_csv(f, index = False)
+    else:
+        write = lambda f : d.to_csv(f, mode='a',
+        header=False, index=False)
+    try:
+        print(write(file))
+    except IOException as ex:
+        print('IOException: ' + ex.message)
+    except Exception as ex:
+        print(ex) 
+   
+print(avg_readings(pm25).to_csv(index = False))
+'''
 # INITIALIZE
 dt = datetime.datetime.now().timetuple()
 file = f"{args.filepre}_{dt[2]}{dt[1]}{dt[0]}.csv"
@@ -56,3 +98,4 @@ for i in range(1, args.N+1):
    s.enter(args.s*i, 1, save_aq, kwargs={'pm25': pm25, 'file': file})
 
 s.run()
+'''
