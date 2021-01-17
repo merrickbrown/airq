@@ -29,32 +29,38 @@ def run_logger(stop_event = None, location='Unknown'):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser()
-    p.add_argument('-c', '--location', help='location to use for logging', default="Unknown")
-    p.add_argument('-s', '--no-server', help='flag to not start the webserver', action='store_true')
-    p.add_argument('-g', '--no-logger', help='flag to not start the logger', action='store_true')
-    p.add_argument('-d', '--no-debug', help='flag to not start the webserver in debug mode', action = 'store_true')
+    p.add_argument('-c', '--location', help='loCation to record in each record when logging', default="Unknown")
+    p.add_argument('-s', '--no-server', help='flag to not start the webServer', action='store_true')
+    p.add_argument('-g', '--no-logger', help='flag to not start the loGger', action='store_true')
+    p.add_argument('-d', '--no-debug', help='flag to not start the webserver in Debug mode', action = 'store_true')
     args = p.parse_args()
+    
+    start_server = not args.no_server
+    start_logger = not args.no_logger
+    debug = not args.no_debug
     
     stop_event = Event()
     server_p = Process(
         target = run_webapp,
         kwargs = {
-            'debug': not args.no_debug,
+            'debug': debug,
             'stop_event': stop_event})
     logger_p = Process(
         target = run_logger,
         kwargs = {'location': args.location,
             'stop_event': stop_event})
     
-    if not args.no_server:
+    if start_server:
         server_p.start()
         print("Visible on network as: " + server_info())
         print(f"Server PID: {server_p.pid}")
-    if not args.no_logger:
+        
+    if start_logger:
         logger_p.start()
         print(f"Logger PID: {logger_p.pid}")
-    if not args.no_server:
+        
+    if start_server:
         server_p.join()
-    if not args.no_logger:
+    if start_logger:
         logger_p.join()
         

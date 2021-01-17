@@ -11,8 +11,6 @@ def log_readings(stop_event, location = 'Unknown'):
         try:
             log_reading(sensor_db.connect(), location)
             count += 1
-            print(os.getpid())
         except KeyboardInterrupt:
             break
     print(f"Added {count} new records.")
-    print(os.getpid())

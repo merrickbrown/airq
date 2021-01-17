@@ -1,4 +1,4 @@
-from flask import Flask, json, Response, g
+from flask import Flask, json, Response, render_template
 import os, sys
 from util import sensor_db
 
@@ -11,11 +11,11 @@ TODO
 [ ] Make this generally better, following model of, say https://flask.palletsprojects.com/en/1.1.x/tutorial/
 '''
 
-app = Flask("AirQ Sensor data")
+app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return 'Hello world'
+    return render_template('index.html')
 
 @app.route('/stop')
 def stop_logger():
