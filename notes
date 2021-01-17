@@ -49,3 +49,14 @@ federal aq index calculator (outdoor?): https://www.airnow.gov/aqi/aqi-calculato
 do i need to calibrate this thing?
 https://www.epa.gov/sites/production/files/2018-01/documents/collocation_instruction_guide.pdf
 https://forums.adafruit.com/viewtopic.php?f=48&t=136528&p=841771&hilit=pm2.5#p776174
+
+WEB APPLICATION
+built a simple sqlite db to store data from the logger. startup_aq.py is the main entry point. can be used to start up web
+server and/or the logger. 
+
+/ is the main page
+/data is API endpoint for data
+/stop is endpoint for stopping the logger if already running
+
+from a data perspective the main difference here is that I've added a location column to the DB
+which can be used to differentiate different runs beyond just timestamp 
