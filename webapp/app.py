@@ -2,6 +2,15 @@ from flask import Flask, json, Response, g
 import os, sys
 from util import sensor_db
 
+'''
+TODO
+[ ] Allow simple queries in the data API (eg location, date ranges)
+[ ] Improve data response performance, likely via
+[ ] Add start endpoint for starting the logger with a particular location set, or changing the location during the run
+[ ] Actually make index useful - eg display data, convenient UI for endpoints
+[ ] Make this generally better, following model of, say https://flask.palletsprojects.com/en/1.1.x/tutorial/
+'''
+
 app = Flask("AirQ Sensor data")
 
 @app.route('/')
