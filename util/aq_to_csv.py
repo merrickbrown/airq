@@ -15,10 +15,15 @@ TODO:
 [] checks against stupidity? e.g. N*s longer period than cron interval
 """
 
-import time, datetime, board, busio, sched, argparse
+import time, datetime, board, busio, sched, argparse, sys, os
 import pandas as pd
+# this is to allow for this to be run as its own script
+if __name__ == '__main__':
+    currentdir = os.path.dirname(os.path.realpath(__file__))
+    sys.path.append(currentdir)
 from device import getPM25
 from aq import read_row
+
 
 def save_aq(d, file, first = False):
     if first:

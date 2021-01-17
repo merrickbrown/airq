@@ -21,9 +21,9 @@ def read_row():
     return aqdata.copy()
 
 '''
-This blocks, should be used in a thread if used outside this script
+This blocks, should be used in a thread/process if used outside this script
 '''
-def avg_readings(period_s = 2, num_samples = 50):
+def avg_readings(period_s = 20, num_samples = 10):
     data = []
     delta = period_s/num_samples
     for i in range(num_samples):
@@ -32,6 +32,8 @@ def avg_readings(period_s = 2, num_samples = 50):
             data.append(row)
         except RuntimeError:
             print("Could not read from PM2.5")
+        # bad, constant delta-based sampling. use a timer that self corrects each iteration
+        # instead
         time.sleep(delta)
     avg = avg_dicts(data).to_dict()
     # set the time to be the last time we sampled

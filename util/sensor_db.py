@@ -1,7 +1,8 @@
-import dataset
+import dataset, os, pathlib
 
 def connect():
-    return dataset.connect('sqlite:///../data/sqlite/aq.db')
+    currentdir = pathlib.Path(os.path.realpath(__file__)).parent
+    return dataset.connect(f"sqlite:///{currentdir.parent}/data/sqlite/aq.db")
 
 db = connect()
 
