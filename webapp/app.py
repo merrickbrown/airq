@@ -29,7 +29,6 @@ def stop_logger():
 @app.route('/data')
 def data():
     res = []
-    # we can safely use connect here because under the hood datasets uses a connection pool
     db = sensor_db.connect()
     # this should be replaced with a generator, but json-ing the result can be a bit tricky
     # see https://blog.al4.co.nz/2016/01/streaming-json-with-flask/ for some ideas
@@ -38,6 +37,7 @@ def data():
     # don't use jsonify here it is way too slow
     body = json.dumps({'records': res})
     print(f"Returned {len(res)} records")
+    db.close()
     return Response(response=body, status=200, mimetype="application/json")
 
 def getApp(stop_event):

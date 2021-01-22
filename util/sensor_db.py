@@ -12,13 +12,22 @@ def db():
 def insert_reading(db, location, reading):
     db.begin()
     try:
-        table = db['readings']
+        locations = db['locations']
+        locationEntity = locations.find_one(name=location)
+        if locationEntity is None:
+                locationEntity = {'name': location}
+                locationEntity['id'] = locations.insert(locationEntity)
+        readings = db['readings']
         reading_with_location = reading.copy()
-        reading_with_location['location'] = location
-        table.insert(reading_with_location)
+        reading_with_location['location'] = locationEntity['name']
+        reading_with_location['locationId'] = locationEntity['id']
+        readings.insert(reading_with_location)
         db.commit()
-    except:
+        return True
+    except Exception as ex:
         db.rollback()
+        print(ex)
+        return False
         
 def get_readings(db, location = None):
     table = db['readings']
