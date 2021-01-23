@@ -20,12 +20,22 @@ def get_ip_address():
 def server_info():
     return f"http://{get_ip_address()}:5000"
 
+'''
+Run the web app. The passed in 'stop_event' allows the web server to signal to the
+logger process to stop running.
+'''
 def run_webapp(stop_event = None, debug = True):
     # setting use_reloader to True (default) will cause multi-process code to not work great
     app.getApp(stop_event).run(use_reloader=False, debug=debug, host='0.0.0.0')
 
+'''
+Run the logger process, logging readings with the passed in location string.
+The passed in 'stop_event' allows the web server to signal to the logger process to stop running.
+'''
 def run_logger(stop_event = None, location='Unknown'):
+    # infinite loop until stop event is triggered
     aq_to_db.log_readings(stop_event, location = location)
+    print("Logger stopped")
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser()
@@ -39,6 +49,7 @@ if __name__ == '__main__':
     start_logger = not args.no_logger
     debug = not args.no_debug
     
+    # events are basically safe booleans we can use to pass information between processes
     stop_event = Event()
     server_p = Process(
         target = run_webapp,
@@ -58,7 +69,10 @@ if __name__ == '__main__':
     if start_logger:
         logger_p.start()
         print(f"Logger PID: {logger_p.pid}")
-        
+    
+    # join these, probably not totally necessary
+    # but as an upshot, allows us to ^C this script to send the
+    # KeyboardInterrupt to both child processes
     if start_server:
         server_p.join()
     if start_logger:

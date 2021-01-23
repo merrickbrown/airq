@@ -64,7 +64,7 @@ fetch('/data').then(res => res.json()).then(raw => {
 
   // Add Y axis
   var y = d3.scaleLinear()
-    .domain([-10000, 10000])
+    .domain([-1000, 1000])
     .range([ height, 0 ]);
 
   // color palette

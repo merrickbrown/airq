@@ -1,7 +1,9 @@
-import dataset, os, pathlib
+import dataset, os, pathlib, datetime
 
 def connect():
     currentdir = pathlib.Path(os.path.realpath(__file__)).parent
+    # potentially some opportunity to improve performance by passing some
+    # sqlite engine options here
     return dataset.connect(f"sqlite:///{currentdir.parent}/data/sqlite/aq.db")
 
 db = connect()
@@ -28,6 +30,15 @@ def insert_reading(db, location, reading):
         db.rollback()
         print(ex)
         return False
+    
+def get_readings_in_date_range(db, start_date, end_date = datetime.datetime.now(), location=None):
+    table = db['readings']
+    time_filter = {'between': (start_date, end_date)}
+    if location is not None:
+        return table.find(time=time_filter, location=location)
+    else:
+        return table.find(time=time_filter)
+    
         
 def get_readings(db, location = None):
     table = db['readings']

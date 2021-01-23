@@ -1,4 +1,8 @@
-import time, datetime, board, busio, sched, argparse
+import time, datetime
+# import asyncio to convert some of these to non-blocking.
+# overall, I am not 100% if that is truly necessary since this is all in one process
+# Main benefits I can see are to allow better combination of sampling + averaging, also something like a current readings tracker
+# could be neat as part of a dashboard or something
 import pandas as pd
 from device import getPM25
 
@@ -20,10 +24,7 @@ def read_row():
     aqdata['time'] = [datetime.datetime.now()]
     return aqdata.copy()
 
-'''
-This blocks, should be used in a thread/process if used outside this script
-'''
-def avg_readings(period_s = 20, num_samples = 10):
+def avg_readings(period_s = 60, num_samples = 15):
     data = []
     delta = period_s/num_samples
     for i in range(num_samples):
@@ -32,10 +33,12 @@ def avg_readings(period_s = 20, num_samples = 10):
             data.append(row)
         except RuntimeError:
             print("Could not read from PM2.5")
-        # bad, constant delta-based sampling. use a timer that self corrects each iteration
+        # bad, constant, delta-based sampling. use a timer that self corrects each iteration
         # instead
         time.sleep(delta)
     avg = avg_dicts(data).to_dict()
     # set the time to be the last time we sampled
     avg['time'] = datetime.datetime.now()
     return avg
+
+    
