@@ -2,9 +2,6 @@
 
 import socket, os, sys, argparse
 from multiprocessing import Process, Event
-#currentdir = os.path.dirname(os.path.realpath(__file__))
-#sys.path.append(currentdir)
-#sys.path.append(currentdir + '/util')
 from util import aq_to_db
 import webapp
 
@@ -41,12 +38,11 @@ if __name__ == '__main__':
     p.add_argument('-s', '--no-server', help='flag to not start the webServer', action='store_true')
     p.add_argument('-g', '--no-logger', help='flag to not start the loGger', action='store_true')
     p.add_argument('-d', '--no-debug', help='flag to not start the webserver in Debug mode', action = 'store_true')
+
     args = p.parse_args()
-    
     start_server = not args.no_server
     start_logger = not args.no_logger
     debug = not args.no_debug
-    
     # events are basically safe booleans we can use to pass information between processes
     stop_event = Event()
     server_p = Process(
@@ -58,12 +54,12 @@ if __name__ == '__main__':
         target = run_logger,
         kwargs = {'location': args.location,
             'stop_event': stop_event})
-    
+
     if start_server:
         server_p.start()
         print("Visible on network as: " + server_info())
         print(f"Server PID: {server_p.pid}")
-        
+
     if start_logger:
         logger_p.start()
         print(f"Logger PID: {logger_p.pid}")

@@ -1,6 +1,6 @@
 # import sensor_db, argparse, os
 import argparse, os
-from .aq import avg_readings 
+from .aq import avg_readings
 from . import sensor_db
 
 def log_reading(db, location):

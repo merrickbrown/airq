@@ -1,7 +1,9 @@
 """
+TODO: this is no longer used
+
 Write to csv all output from PM25 sensor
 every s seconds, a total N times
-default is 60 seconds, 900 times (15h) 
+default is 60 seconds, 900 times (15h)
 to be scheduled in crontab (defaults and naming  suggest daily)
 
 modified from the example
@@ -36,24 +38,26 @@ def save_aq(d, file, first = False):
     except IOException as ex:
         print('IOException: ' + ex.message)
     except Exception as ex:
-        print(ex) 
+        print(ex)
 
 if __name__ == '__main__':
+    sys.exit("Running aq_to_csv as an executable is deprecated.")
+
     p = argparse.ArgumentParser()
     p.add_argument('--filepre', help='file name prefix relative to current wd, filepre_dmy.csv', default="")
     p.add_argument('--s', type=int, help='interval in seconds read from PM2.5', default=60)
     p.add_argument('--N', type=int, help='N intervals to read', default=900)
-    p.add_argument('--append', type=bool, help='whether to append to existing file or not', default=False) 
+    p.add_argument('--append', type=bool, help='whether to append to existing file or not', default=False)
 
     args = p.parse_args()
 
     # INITIALIZE
     dt = datetime.datetime.now().timetuple()
     file = f"{args.filepre}_{dt[2]}{dt[1]}{dt[0]}.csv"
-        
+
     def read_and_save_aq(file, first = False):
         save_aq(pd.DataFrame(read_row(), index=[0]), file, first)
-    
+
     read_and_save_aq(file, first = True)
 
     # RUN

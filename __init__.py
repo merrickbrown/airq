@@ -1,10 +1,7 @@
-# at present no imports of submodules
-# since don't expect aq package to be imported anywhere
-# if so, include things like
-# from . import util
+# exposes all modules in util without additional import needed
+# this is only relevant when airq is itself imported. internally
+# (startup_airq.py) still need to do 
+# from util import thing 
 
-# or more likely
-# from .util import *
+from .util import *
 
-# which makes all of the modules in util available as
-# aq.<module>

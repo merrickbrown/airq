@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# TODO
+"""
 import pandas as pd
 import dataset
 
@@ -12,3 +15,4 @@ print(dir(db))
 #wb = pd.read_sql('testab', con = db)
 
 #print(wb.head())
+"""
