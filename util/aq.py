@@ -4,7 +4,7 @@ import time, datetime
 # Main benefits I can see are to allow better combination of sampling + averaging, also something like a current readings tracker
 # could be neat as part of a dashboard or something
 import pandas as pd
-from device import getPM25
+from .device import getPM25
 
 # FUN
 def avg_dicts(dicts):

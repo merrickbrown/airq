@@ -1,14 +1,12 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import socket, os, sys, argparse
 from multiprocessing import Process, Event
-# this sucks I hate this, probably means I should restructure the
-# project or just learn how to use modules correctly
-currentdir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(currentdir)
-sys.path.append(currentdir + '/util')
-import aq_to_db 
-from webapp import app 
+#currentdir = os.path.dirname(os.path.realpath(__file__))
+#sys.path.append(currentdir)
+#sys.path.append(currentdir + '/util')
+from util import aq_to_db
+import webapp
 
 # Main entry point for server + logger
 
@@ -26,7 +24,7 @@ logger process to stop running.
 '''
 def run_webapp(stop_event = None, debug = True):
     # setting use_reloader to True (default) will cause multi-process code to not work great
-    app.getApp(stop_event).run(use_reloader=False, debug=debug, host='0.0.0.0')
+    webapp.getApp(stop_event).run(use_reloader=False, debug=debug, host='0.0.0.0')
 
 '''
 Run the logger process, logging readings with the passed in location string.
@@ -39,7 +37,7 @@ def run_logger(stop_event = None, location='Unknown'):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser()
-    p.add_argument('-c', '--location', help='loCation to record in each record when logging', default="Unknown")
+    p.add_argument('-c', '--location', help='location to record in each record when logging', default="Unknown")
     p.add_argument('-s', '--no-server', help='flag to not start the webServer', action='store_true')
     p.add_argument('-g', '--no-logger', help='flag to not start the loGger', action='store_true')
     p.add_argument('-d', '--no-debug', help='flag to not start the webserver in Debug mode', action = 'store_true')
