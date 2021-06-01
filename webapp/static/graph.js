@@ -1,6 +1,6 @@
 var margin = {top: 20, right: 30, bottom: 0, left: 10},
-    width = 460 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    width = 860 - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 const svg = d3.select("#graph")
@@ -24,20 +24,26 @@ fetch('/data').then(res => res.json()).then(raw => {
     "particles 100um"
   ]
 
-  let data = raw.records.map(({"time": time,
+  // consider converting wide to long
+  // http://jonathansoma.com/tutorials/d3/wide-vs-long-data/
+  let data = raw.records.map(({
+    "time": time,
     "particles 03um": p03,
     "particles 05um": p05,
     "particles 10um": p10,
     "particles 25um": p25,
     "particles 50um": p50,
-    "particles 100um": p100}) => {return {"time": new Date(time).getTime()/1000,
-    "particles 03um": p03*3,
-    "particles 05um": p05*5,
-    "particles 10um": p10*10,
-    "particles 25um": p25*25,
-    "particles 50um": p50*50,
-    "particles 100um": p100*100}});
+    "particles 100um": p100
+  }) => {return {
+    "time": new Date(time).getTime()/1000,
+    "particles 03um": p03,
+    "particles 05um": p05,
+    "particles 10um": p10,
+    "particles 25um": p25,
+    "particles 50um": p50,
+    "particles 100um": p100}});
   
+  // TODO what is data.y for?
   data.columns = columns;
   data.y = "Particles";
 
@@ -59,12 +65,16 @@ fetch('/data').then(res => res.json()).then(raw => {
   svg.append("text")
       .attr("text-anchor", "end")
       .attr("x", width)
-      .attr("y", height-30 )
+      .attr("y", height-height/20)
       .text("Time");
 
   // Add Y axis
   var y = d3.scaleLinear()
-    .domain([-1000, 1000])
+    // scale to max sum of particles. unclear why reverse map in range is
+    // needed for right-side-up plot
+    .domain([0, 1.1 * d3.max(data, function(d) { return d["particles 03um"] +
+        d["particles 05um"] + d["particles 10um"] + d["particles 25um"] +
+        d["particles 50um"] + d["particles 100um"] })])
     .range([ height, 0 ]);
 
   // color palette
@@ -74,7 +84,10 @@ fetch('/data').then(res => res.json()).then(raw => {
 
   //stack the data?
   var stackedData = d3.stack()
-    .offset(d3.stackOffsetSilhouette)
+    .order(d3.stackOrderReverse)
+    // note this change means you'll want to adjust the y domain, Time label
+    //.offset(d3.stackOffsetSilhouette)
+    .offset(d3.stackOffsetNone)
     .keys(keys)
     (data)
 
@@ -89,7 +102,7 @@ fetch('/data').then(res => res.json()).then(raw => {
   // Three function that change the tooltip when user hover / move / leave a cell
   var mouseover = function(d) {
     Tooltip.style("opacity", 1)
-    d3.selectAll(".myArea").style("opacity", .2)
+    d3.selectAll(".myArea").style("opacity", .3)
     d3.select(this)
       .style("stroke", "black")
       .style("opacity", 1)

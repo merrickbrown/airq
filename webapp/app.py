@@ -5,24 +5,26 @@ from util import sensor_db
 '''
 TODO
 [ ] Allow simple queries in the data API (eg location, date ranges)
-[ ] Improve data response performance, right now we're looking at 
+[ ] Improve data response performance, right now we're looking at
 [ ] Add 'start' endpoint for starting the logger with a particular location set, or changing the location during the run
 [ ] Actually make index useful - eg display data, convenient UI for endpoints
 [ ] Make this generally better, following model of, say https://flask.palletsprojects.com/en/1.1.x/tutorial/
 '''
 
+# shouldn't change the name
+# seems to be used to set directories for web app, e.g. templates/
 app = Flask(__name__)
 
 @app.before_request
 def before_request():
     g.db = sensor_db.connect()
-    
+
 @app.after_request
 def after_request(response):
     if g.db is not None:
         g.db.close()
         g.db = None
-    return response 
+    return response
 
 @app.route('/')
 def index():
@@ -64,7 +66,7 @@ def data():
     if days is None and hours is None:
         days = 1
         hours = 0
-    
+
     now = datetime.datetime.now()
     delta = datetime.timedelta(days=days, hours=hours)
     query = sensor_db.get_readings_in_date_range(
@@ -72,7 +74,7 @@ def data():
         start_date = now - delta,
         end_date = now,
         location = args.get('location'))
-    
+
     # stream-based response generator
     def generate():
         readings = query.__iter__()
@@ -96,4 +98,4 @@ def data():
 def getApp(stop_event):
     app.stop_logger = stop_event
     return app
-    
+

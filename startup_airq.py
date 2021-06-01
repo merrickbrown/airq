@@ -6,7 +6,6 @@ from util import aq_to_db
 import webapp
 
 # Main entry point for server + logger
-
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
@@ -40,9 +39,11 @@ if __name__ == '__main__':
     p.add_argument('-d', '--no-debug', help='flag to not start the webserver in Debug mode', action = 'store_true')
 
     args = p.parse_args()
+
     start_server = not args.no_server
     start_logger = not args.no_logger
     debug = not args.no_debug
+
     # events are basically safe booleans we can use to pass information between processes
     stop_event = Event()
     server_p = Process(
@@ -63,7 +64,7 @@ if __name__ == '__main__':
     if start_logger:
         logger_p.start()
         print(f"Logger PID: {logger_p.pid}")
-    
+
     # join these, probably not totally necessary
     # but as an upshot, allows us to ^C this script to send the
     # KeyboardInterrupt to both child processes
@@ -71,4 +72,3 @@ if __name__ == '__main__':
         server_p.join()
     if start_logger:
         logger_p.join()
-        
